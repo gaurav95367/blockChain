@@ -51,7 +51,7 @@ public class StringUtil {
 			throw new RuntimeException(e);
 		}
 	}
-public static String getStringFromKey(Key key) {
-		return Base64.getEncoder().encodeToString(key.getEncoded());
-}
+	public static String getStringFromKey(Key key) {
+			return Base64.getEncoder().encodeToString(key.getEncoded());
+	}
 }
