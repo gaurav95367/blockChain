@@ -25,11 +25,19 @@ public class Block {
 				previousHash +
 				Long.toString(timeStamp) +
 				Integer.toString(nonce) + 
-				proof_data 
+				Integer.toString(proof_data) 
 				);
 		return calculatedhash;
 	}
-	
+	public static String calculate_block_hash(Block block) {
+		String calculatedhash = StringUtil.applySha256( 
+				block.previousHash +
+				Long.toString(block.timeStamp) +
+				Integer.toString(block.nonce) + 
+				Integer.toString(block.proof_data) 
+				);
+		return calculatedhash;
+	}
 	public void print(){
 		System.out.println("hash : "+hash);
 		System.out.println("previousHash : "+ previousHash);
@@ -40,7 +48,7 @@ public class Block {
 	}
 
 
-	public static int mineBlock(int difficulty) {
+	public static int proof_of_work(int difficulty) {
 		String target = new String(new char[difficulty]).replace('\0', '0'); //Create a string with difficulty * "0" 
 		while(!hash.substring( 0, difficulty).equals(target)) {
 			nonce ++;

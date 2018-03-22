@@ -10,7 +10,7 @@ import com.sun.net.httpserver.*;
 
 public class NoobChain {
 	
-	public static ArrayList<Block> blockchain = new ArrayList<Block>();
+	public static List<Block> blockchain = new ArrayList<Block>();
 	public static int difficulty = 5;
 	static int port = 8080;
 
@@ -20,7 +20,7 @@ public class NoobChain {
 		Block genesis_block= new Block("100",1);
 		blockchain.add(genesis_block);
 	}
-
+	// @Override
 	public static Block create_new_block(int proof, String previousHash){
 		Block new_block= new Block(previousHash,proof);
 		blockchain.add(new_block);
@@ -42,9 +42,17 @@ public class NoobChain {
     	public void handle(HttpExchange t) throws IOException {
     		int len=blockchain.size();
             Block last_block= blockchain.get(len-1);
-            int proof=Block.mineBlock(4);
-            String previousHash=Block.calculateHash()
-            String response=Integer.toString(proof);
+            int proof=Block.proof_of_work(4);
+
+            // this is too be done next . hash calculation and adding into chain
+            String previousHash=Block.calculate_block_hash(last_block);
+            Block new_block=create_new_block(proof,previousHash);
+            String response="";
+            response=response+ "<p> Index: " +(blockchain.size()) + "</p>";
+            response=response+ "<p> previousHash: " +new_block.previousHash + "</p>";
+            response=response+ "<p> proof: " +new_block.proof_data + "</p>";
+            response=response+ "<p> timestamp: " +new_block.timeStamp + "</p>";
+            System.out.println(response);
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -57,10 +65,12 @@ public class NoobChain {
             int len=blockchain.size();
             String response = "";
             for (int i=0;i<len ;i++ ){
+            	// response="";
             	response=response+ "<p> Index: " +(i+1) + "</p>";
             	response=response+ "<p> previousHash: " +blockchain.get(i).previousHash + "</p>";
             	response=response+ "<p> proof: " +blockchain.get(i).proof_data + "</p>";
             	response=response+ "<p> timestamp: " +blockchain.get(i).timeStamp + "</p>";
+            	// System.out.println(response);
             }
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
