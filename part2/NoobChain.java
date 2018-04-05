@@ -4,13 +4,13 @@ import java.util.Base64;
 import java.security.Provider;
 //import com.google.gson.GsonBuilder;
 import java.io.*;
-import java.net.InetSocketAddress;
-
+import java.net.*;
 import com.sun.net.httpserver.*;
-
+// import javax.servlet.http.*;
 public class NoobChain {
 	
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
+	public static Set<String> allNodes=new HashSet <String>();
 	public static int difficulty = 5;
 	static int port = 8080;
 
@@ -35,6 +35,7 @@ public class NoobChain {
         System.out.println("Server started at localhost:"+port);
         server.createContext("/chain", new chain());
         server.createContext("/mine", new mine());
+        server.createContext("/register", new register());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -43,60 +44,14 @@ public class NoobChain {
     	public void handle(HttpExchange t) throws IOException {
     		int len=blockchain.size();
             Block last_block= blockchain.get(len-1);
-            //int proof=Block.proof_of_work(4);
-
-            // this is too be done next . hash calculation and adding into chain
             String previousHash=last_block.hash;
-           System.out.println("-----------------------------------");
-          	len=blockchain.size();
-            for (int i=0;i<len ;i++ ){
-            	String response="";
-            	// System.out.println("Index = "+i);
-            	// System.out.println("hash = "+);
-            	// System.out.println("Index = "+i);
-            	// System.out.println("Index = "+i);
-
-            	response=response+ "Index: " +(i+1) +"\n";
-            	response=response+ " previousHash: " +blockchain.get(i).previousHash +"\n";
-            	response=response+ "proof: " +blockchain.get(i).nonce+"\n" ;
-            	response=response+ "timestamp: " +blockchain.get(i).timeStamp+"\n";
-            	System.out.println(response);
-            }
-
-           System.out.println("---After adding");
-
-
             Block new_block=create_new_block(previousHash);
-
-          	len=blockchain.size();
-            for (int i=0;i<len ;i++ ){
-            	String response="";
-            	// System.out.println("Index = "+i);
-            	// System.out.println("hash = "+);
-            	// System.out.println("Index = "+i);
-            	// System.out.println("Index = "+i);
-
-            	response=response+ "Index: " +(i+1) +"\n";
-            	response=response+ " previousHash: " +blockchain.get(i).previousHash +"\n";
-            	response=response+ "proof: " +blockchain.get(i).nonce+"\n" ;
-            	response=response+ "timestamp: " +blockchain.get(i).timeStamp+"\n";
-            	System.out.println(response);
-            }
-
-
-
-          
             String response="";
             response=response+ "<p> Index: " +(blockchain.size()) + "</p>";
             response=response+ "<p> previousHash: " +new_block.previousHash + "</p>";
             response=response+ "<p> proof: " +new_block.nonce + "</p>";
             response=response+ "<p> timestamp: " +new_block.timeStamp + "</p>";
             System.out.println(response);
-
-
-
-
-
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -116,6 +71,27 @@ public class NoobChain {
             	response=response+ "<p> timestamp: " +blockchain.get(i).timeStamp + "</p>";
             	// System.out.println(response);
             }
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+            
+        }
+    }
+     static class register implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+	        URI requestedUri = t.getRequestURI();
+	        String query = requestedUri.getRawQuery();
+	        String parameters[]=query.split("[=]");
+	        String response = "";
+	        if(parameters.length!=2)
+	        	response="invalid parameters:\n";
+	        else{
+	        	allNodes.add(parameters[1]);
+	        	// System.out.println(parameters[1]);
+	        	response="Nodes has been added";
+	        }	         
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());

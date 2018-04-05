@@ -29,6 +29,7 @@ class Blockchain:
         """
 
         parsed_url = urlparse(address)
+        print parsed_url
         if parsed_url.netloc:
             self.nodes.add(parsed_url.netloc)
         elif parsed_url.path:
@@ -258,12 +259,14 @@ def register_nodes():
     values = request.get_json()
 
     nodes = values.get('nodes')
+    # print (nodes)
     if nodes is None:
         return "Error: Please supply a valid list of nodes", 400
 
-    for node in nodes:
-        blockchain.register_node(node)
-
+    # for node in nodes:
+    blockchain.register_node(nodes)
+    for node in blockchain.nodes:
+        print node
     response = {
         'message': 'New nodes have been added',
         'total_nodes': list(blockchain.nodes),
