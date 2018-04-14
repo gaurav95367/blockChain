@@ -91,6 +91,8 @@ public class NoobChain {
 	        	allNodes.add(parameters[1]);
 	        	// System.out.println(parameters[1]);
 	        	response="Nodes has been added";
+	        	String ports[]=parameters[1].split("[:]")
+	        	response+=ports[1];
 	        }	         
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
